@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: white;
+            padding: 30px;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        h1 {
+            font-size: 20px;
+            color: #818cf8;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #4f46e5;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Gemini AI Setup</h1>
+    <p class="hint">To enable True AI rewriting, please enter your Google Gemini API Key. You can get a free key from <a
+            href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818cf8;">Google AI Studio</a>.
+    </p>
+
+    <input type="password" id="api-key" placeholder="Enter your Gemini API Key">
+    <button id="save-btn">Save Configuration</button>
+
+    <div class="status" id="status"></div>
+
+    <script src="options.js"></script>
+</body>
+
+</html>

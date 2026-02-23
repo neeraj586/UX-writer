@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            width: 320px;
+            padding: 16px;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 6px;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            font-size: 13px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            background: rgba(51, 65, 85, 0.9);
+            transform: translateX(4px);
+        }
+
+        .label {
+            font-size: 9px;
+            color: #818cf8;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .text {
+            font-size: 13px;
+            color: #f1f5f9;
+            line-height: 1.4;
+        }
+
+        .footer {
+            font-size: 10px;
+            color: #64748b;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(129, 140, 248, 0.2);
+            border-top: 3px solid #818cf8;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .settings-link {
+            font-size: 10px;
+            color: #64748b;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .settings-link:hover {
+            color: #818cf8;
+        }
+
+        /* Toggle Switch Styles */
+        .master-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .master-toggle:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 28px;
+            height: 16px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #334155;
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #818cf8;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(12px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo-box">
+            <div class="logo"></div>
+            <div style="display:flex; flex-direction:column;">
+                <h2 style="margin:0;">Capillary UX Writer</h2>
+                <div id="master-status" style="font-size:9px; color:#64748b; margin-top:2px;">Extension is Active</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <label class="switch">
+                <input type="checkbox" id="extension-toggle" checked>
+                <span class="slider"></span>
+            </label>
+            <a href="options.html" target="_blank" class="settings-link">⚙️</a>
+        </div>
+    </div>
+
+    <input type="text" id="main-input" placeholder="Paste text here to rewrite..." autofocus>
+    <input type="text" id="context-input"
+        style="margin-top: -10px; font-size: 11px; background: rgba(255,255,255,0.03);"
+        placeholder="Optional: Add context (e.g., Coupon Settings page)">
+
+    <div id="results">
+        <div style="font-size: 12px; color: #94a3b8; text-align: center; padding: 20px;">
+            Enter your product copy above to get Capillary-standard suggestions.
+        </div>
+    </div>
+
+    <div id="copy-status">Copied! ✨</div>
+
+    <div class="footer">US English • Capillary Context Active</div>
+
+    <script src="docs_context.js"></script>
+    <script src="popup.js"></script>
+</body>
+
+</html>

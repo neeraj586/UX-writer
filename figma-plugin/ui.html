@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            width: 380px;
+            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F7F8FA;
+            color: #1A1A1A;
+            overflow-x: hidden;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #FF6600;
+        }
+
+        .logo {
+            width: 34px;
+            height: 34px;
+            background: #FF6600;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo svg { fill: white; }
+
+        .header-text h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1A1A1A;
+        }
+
+        .header-text span {
+            font-size: 10px;
+            color: #FF6600;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Form ── */
+        .input-label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group { margin-bottom: 12px; }
+
+        textarea,
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            color: #1A1A1A;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        textarea.context-textarea {
+            height: 60px;
+            min-height: 44px;
+            resize: vertical;
+        }
+
+        textarea:focus,
+        input[type="text"]:focus {
+            border-color: #FF6600;
+            box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+        }
+
+        .context-hint {
+            font-size: 10px;
+            color: #AAA;
+            margin-top: 4px;
+        }
+
+        /* ── Buttons ── */
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: #FF6600;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-primary:hover { background: #E05500; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { background: #FFAA77; cursor: not-allowed; }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #FF6600;
+            border: 1.5px solid #FF6600;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover { background: #FFF3E0; }
+
+        /* ── Cards ── */
+        .card {
+            background: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .card:hover {
+            border-color: #FF6600;
+            background: #FFF8F3;
+            transform: translateX(3px);
+            box-shadow: 0 2px 10px rgba(255, 102, 0, 0.12);
+        }
+
+        .card-label {
+            font-size: 9px;
+            color: #FF6600;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .card-text {
+            font-size: 14px;
+            color: #1A1A1A;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .card-desc {
+            font-size: 10px;
+            color: #999;
+            margin-top: 6px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+            font-family: inherit;
+        }
+
+        .card-btn-apply {
+            background: #FF6600;
+            color: white;
+        }
+
+        .card-btn-apply:hover { background: #E05500; }
+
+        .card-btn-copy {
+            background: white;
+            color: #FF6600;
+            border: 1.5px solid #FF6600;
+        }
+
+        .card-btn-copy:hover { background: #FFF3E0; }
+
+        .card-btn.copied {
+            background: #22C55E;
+            color: white;
+            border-color: #22C55E;
+        }
+
+        /* ── States ── */
+        .loading-spinner {
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid rgba(255, 102, 0, 0.15);
+            border-top: 2.5px solid #FF6600;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 28px auto;
+        }
+
+        .loading-text {
+            text-align: center;
+            font-size: 11px;
+            color: #FF6600;
+            margin-top: 6px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 28px 20px;
+            color: #BBB;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .empty-state .icon { font-size: 30px; margin-bottom: 8px; }
+
+        /* ── Toast ── */
+        #copy-status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF6600;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+            box-shadow: 0 4px 14px rgba(255, 102, 0, 0.35);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+        </div>
+        <div class="header-text">
+            <h2>Capillary UX Writer</h2>
+            <span>AI-powered copy assistant</span>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <div class="input-label">Source Text</div>
+        <textarea id="main-input" placeholder="Select a text layer in Figma, or type here..."></textarea>
+    </div>
+
+    <div class="input-group">
+        <div class="input-label">Instructions / Context (Optional)</div>
+        <textarea id="context-input" class="context-textarea" placeholder="e.g. 'make it more formal', 'use simpler words', URL, or page name"></textarea>
+        <div class="context-hint">Give AI a rewrite instruction, paste a URL, or add page context</div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn-primary" id="rewrite-btn">✨ Rewrite</button>
+        <button class="btn-secondary" id="get-selection">Fetch from Figma</button>
+    </div>
+
+    <div id="results">
+        <div class="empty-state">
+            <div class="icon">✍️</div>
+            Select a text layer in Figma or type above,<br>then click <strong>Rewrite</strong>
+        </div>
+    </div>
+
+    <div id="copy-status">Applied to Figma! ✨</div>
+
+    <script src="docs_context.js"></script>
+    <script>
+        const input        = document.getElementById('main-input');
+        const contextInput = document.getElementById('context-input');
+        const results      = document.getElementById('results');
+        const rewriteBtn   = document.getElementById('rewrite-btn');
+        const getSelBtn    = document.getElementById('get-selection');
+        const copyStatus   = document.getElementById('copy-status');
+
+        const PRODUCT_KB = {
+            products: ["Loyalty+", "Engage+", "Insights+", "Connect+", "Rewards+", "Member Care", "Dev Console", "Neo", "Vulcan", "InTouch", "AskAira"],
+            dictionary: {
+                "sees": "series", "see": "series", "card sees": "Card Series", "coupon sees": "Coupon Series",
+                "mthod": "method", "methd": "method", "genration": "generation", "register": "enroll",
+                "signup": "enrollment", "give": "issue", "sent": "issuance", "use": "redeem",
+                "used": "redemption", "old transaction": "retro transaction", "hide": "mask"
+            }
+        };
+
+        // Hard-coded API key
+        const apiKey = "AIzaSyCdR7kProynOhrGIxLAnE1rtoMRw8mHXq4";
+
+        // Auto-fetch selection on open
+        parent.postMessage({ pluginMessage: { type: 'get-selection' } }, '*');
+
+        getSelBtn.onclick = () => {
+            parent.postMessage({ pluginMessage: { type: 'get-selection' } }, '*');
+        };
+
+        rewriteBtn.onclick = triggerRewrite;
+
+        // Cmd/Ctrl + Enter shortcut
+        input.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') triggerRewrite();
+        });
+
+        async function triggerRewrite() {
+            const val     = input.value.trim();
+            const context = contextInput.value.trim();
+
+            if (!val) {
+                results.innerHTML = '<div class="empty-state"><div class="icon">✍️</div>Enter some text above to get started</div>';
+                return;
+            }
+
+            results.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">AI is writing...</div>';
+            rewriteBtn.disabled    = true;
+            rewriteBtn.textContent = 'Writing...';
+
+            const suggestions = await getAISuggestions(val, context);
+
+            rewriteBtn.disabled    = false;
+            rewriteBtn.textContent = '✨ Rewrite';
+
+            results.innerHTML = suggestions.map(s => `
+                <div class="card" data-text="${s.text.replace(/"/g, '&quot;')}">
+                    <div class="card-label">${s.label}</div>
+                    <div class="card-text">${s.text}</div>
+                    <div class="card-desc">${s.desc}</div>
+                    <div class="card-actions">
+                        <button class="card-btn card-btn-apply">Apply to Figma</button>
+                        <button class="card-btn card-btn-copy">Copy</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.card').forEach(card => {
+                const txt = card.getAttribute('data-text');
+
+                card.querySelector('.card-btn-apply').onclick = (e) => {
+                    e.stopPropagation();
+                    parent.postMessage({ pluginMessage: { type: 'update-text', text: txt } }, '*');
+                    showStatus();
+                };
+
+                card.querySelector('.card-btn-copy').onclick = (e) => {
+                    e.stopPropagation();
+                    const btn = e.currentTarget;
+                    navigator.clipboard.writeText(txt).then(() => {
+                        btn.textContent = 'Copied!';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.textContent = 'Copy';
+                            btn.classList.remove('copied');
+                        }, 1500);
+                    });
+                };
+            });
+        }
+
+        // Listen for Figma selection
+        window.onmessage = event => {
+            const msg = event.data.pluginMessage;
+            if (!msg) return;
+            if (msg.type === 'selection') {
+                input.value = msg.text;
+                triggerRewrite();
+            }
+        };
+
+        // Try to fetch page content from a URL (for context)
+        function isUrl(str) {
+            return /^https?:\/\/.+/.test(str.trim());
+        }
+
+        async function fetchUrlContext(url) {
+            try {
+                const res  = await fetch(url);
+                const html = await res.text();
+                const tmp  = document.createElement('div');
+                tmp.innerHTML = html;
+                tmp.querySelectorAll('script, style, nav, footer, header').forEach(el => el.remove());
+                const text = (tmp.innerText || tmp.textContent || '').replace(/\s+/g, ' ').trim();
+                return text.slice(0, 1200);
+            } catch {
+                return null;
+            }
+        }
+
+        async function getAISuggestions(text, context) {
+            try {
+                const deepContext = typeof DEEP_DOCS_CONTEXT !== 'undefined'
+                    ? DEEP_DOCS_CONTEXT
+                    : { product_entities: [], featured_terms: [], us_standard: {}, style_guide: { core_principles: [], tone: '', examples: [] } };
+                const sg = deepContext.style_guide;
+
+                // Detect whether context is a URL, instruction, or page name
+                let contextLine = '';
+                if (!context) {
+                    contextLine = 'Page context: Figma Design (no context given)';
+                } else if (isUrl(context)) {
+                    const pageText = await fetchUrlContext(context);
+                    contextLine = pageText
+                        ? `Page URL: ${context}\nPage content: "${pageText}"`
+                        : `Page URL: ${context} — infer page purpose from the URL path`;
+                } else {
+                    // Could be a plain instruction like "make it friendly" OR a page name
+                    contextLine = `User instruction / context: "${context}" — if this looks like a writing instruction (e.g. "make it formal", "add urgency"), follow it strictly. If it looks like a page name, use it as context.`;
+                }
+
+                const prompt = `You are a Senior UX Writer at Capillary Technologies specialising in SaaS product copy.
+
+CAPILLARY STYLE GUIDE:
+- Principles: ${sg.core_principles.join(', ')}
+- Tone: ${sg.tone}
+- Examples: ${sg.examples.map(ex => `"${ex.bad}" → "${ex.good}"`).join(' | ')}
+
+CAPILLARY KNOWLEDGE:
+- Products: ${deepContext.product_entities.slice(0, 15).join(', ')}
+- Terms: ${deepContext.featured_terms.slice(0, 10).join(', ')}
+
+SaaS UX WRITING STANDARDS (strictly follow all):
+1. NO periods/full stops at the end — UI labels, buttons, tooltips, headings and short strings never end with punctuation
+2. Sentence case only — capitalise first word and proper nouns only
+3. Active voice — "Issue coupon" not "Coupon is issued"
+4. US English — no British spellings
+5. Scannable and short — cut every word that doesn't add meaning
+6. No filler words — remove "please", "simply", "just", "easily", "quickly"
+7. Lead with the verb for actions — "Save changes", "Add member", "Issue coupon"
+8. No marketing fluff — no "powerful", "seamless", "robust", "leverage"
+9. Use correct Capillary terminology — honour the product knowledge above
+10. If a rewrite instruction is given, all 3 suggestions must strictly follow it
+
+INPUT:
+- Text to rewrite: "${text}"
+- ${contextLine}
+
+Return ONLY a valid JSON array of exactly 3 suggestions, no markdown, no explanation outside the JSON:
+[{"label":"archetype name","text":"rewritten copy","desc":"one-line reason"}]`;
+
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    }
+                );
+
+                const data    = await response.json();
+                const aiText  = data.candidates[0].content.parts[0].text;
+                const match   = aiText.match(/\[.*\]/s);
+                return match ? JSON.parse(match[0]) : getFallback(text);
+
+            } catch (e) {
+                return getFallback(text);
+            }
+        }
+
+        function getFallback(text) {
+            let val = text.toLowerCase();
+            Object.keys(PRODUCT_KB.dictionary).forEach(k => {
+                val = val.replace(new RegExp(`\\b${k}\\b`, 'gi'), PRODUCT_KB.dictionary[k]);
+            });
+            val = val.charAt(0).toUpperCase() + val.slice(1);
+            return [
+                { label: "Concise", text: `${val}`,     desc: "Sentence case, no punctuation" },
+                { label: "Direct",  text: `${val} now`, desc: "Action-led, verb first" }
+            ];
+        }
+
+        function showStatus() {
+            copyStatus.style.display = 'block';
+            setTimeout(() => copyStatus.style.display = 'none', 2000);
+        }
+    </script>
+</body>
+
+</html>
