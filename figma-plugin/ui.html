@@ -463,8 +463,12 @@ CAPILLARY KNOWLEDGE:
 - Terms: ${deepContext.featured_terms.slice(0, 10).join(', ')}
 
 SaaS UX WRITING STANDARDS (strictly follow all):
-1. NO periods/full stops at the end — UI labels, buttons, tooltips, headings and short strings never end with punctuation
-2. Sentence case only — capitalise first word and proper nouns only
+1. Sentence case always — capitalise only the first word and proper nouns. Never title case.
+2. Full stop rules (critical — read carefully):
+   - Buttons, labels, headings, nav items, tooltips, tab names → NEVER a full stop
+   - Single-sentence descriptions or helper text → NO full stop
+   - Multi-sentence descriptions or body copy (2+ sentences) → full stop after EACH sentence including the last
+   - Example: "Save your changes. This cannot be undone." ✓   "Save your changes" ✓   "Save your changes." ✗
 3. Active voice — "Issue coupon" not "Coupon is issued"
 4. US English — no British spellings
 5. Scannable and short — cut every word that doesn't add meaning
