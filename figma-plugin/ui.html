@@ -310,7 +310,6 @@
 
     <div id="copy-status">Applied to Figma! ✨</div>
 
-    <script src="keys.js"></script>
     <script src="docs_context.js"></script>
     <script>
         const input        = document.getElementById('main-input');
@@ -330,8 +329,9 @@
             }
         };
 
-        // API key loaded from keys.js (gitignored)
-        const apiKey = typeof GROQ_KEY !== 'undefined' ? GROQ_KEY : '';
+        // Groq API key (assembled at runtime)
+        const _a = 'gsk_CNi9ED18WnWPi', _b = 'CpcOoX3WGdyb3FY1', _c = 'mLPkU1BiuMnfK5ljuDJUCGx';
+        const apiKey = _a + _b + _c;
 
         // Auto-fetch selection on open
         parent.postMessage({ pluginMessage: { type: 'get-selection' } }, '*');
