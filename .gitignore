@@ -5,3 +5,5 @@ node_modules/
 __pycache__/
 serve.js
 serve.py
+keys.js
+figma-plugin/keys.js

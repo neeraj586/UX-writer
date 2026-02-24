@@ -286,14 +286,14 @@
     </div>
 
     <div class="input-group">
-        <div class="input-label">Source Text</div>
-        <textarea id="main-input" placeholder="Select a text layer in Figma, or type here..."></textarea>
+        <div class="input-label">Source Text <span style="font-weight:400; color:#BBB; text-transform:none; letter-spacing:0">(leave empty to write from scratch)</span></div>
+        <textarea id="main-input" placeholder="Select a text layer in Figma, paste existing text, or leave empty to write from scratch..."></textarea>
     </div>
 
     <div class="input-group">
         <div class="input-label">Instructions / Context (Optional)</div>
-        <textarea id="context-input" class="context-textarea" placeholder="e.g. 'make it more formal', 'use simpler words', URL, or page name"></textarea>
-        <div class="context-hint">Give AI a rewrite instruction, paste a URL, or add page context</div>
+        <textarea id="context-input" class="context-textarea" placeholder="e.g. 'Write a button label for adding a new member', 'make it more formal', URL, or page name"></textarea>
+        <div class="context-hint">Rewrite instruction, new copy brief, URL, or page context — or use alone to write from scratch</div>
     </div>
 
     <div class="btn-row">
@@ -310,6 +310,7 @@
 
     <div id="copy-status">Applied to Figma! ✨</div>
 
+    <script src="keys.js"></script>
     <script src="docs_context.js"></script>
     <script>
         const input        = document.getElementById('main-input');
@@ -329,8 +330,8 @@
             }
         };
 
-        // Hard-coded API key
-        const apiKey = "AIzaSyCdR7kProynOhrGIxLAnE1rtoMRw8mHXq4";
+        // API key loaded from keys.js (gitignored)
+        const apiKey = typeof GROQ_KEY !== 'undefined' ? GROQ_KEY : '';
 
         // Auto-fetch selection on open
         parent.postMessage({ pluginMessage: { type: 'get-selection' } }, '*');
@@ -350,8 +351,8 @@
             const val     = input.value.trim();
             const context = contextInput.value.trim();
 
-            if (!val) {
-                results.innerHTML = '<div class="empty-state"><div class="icon">✍️</div>Enter some text above to get started</div>';
+            if (!val && !context) {
+                results.innerHTML = '<div class="empty-state"><div class="icon">✍️</div>Enter text to rewrite, or add an instruction to write from scratch</div>';
                 return;
             }
 
@@ -473,24 +474,32 @@ SaaS UX WRITING STANDARDS (strictly follow all):
 9. Use correct Capillary terminology — honour the product knowledge above
 10. If a rewrite instruction is given, all 3 suggestions must strictly follow it
 
-INPUT:
-- Text to rewrite: "${text}"
-- ${contextLine}
+TASK:
+${text
+    ? `- Rewrite this text: "${text}"\n- ${contextLine}`
+    : `- Write new UI copy from scratch\n- Brief: ${contextLine}`
+}
 
 Return ONLY a valid JSON array of exactly 3 suggestions, no markdown, no explanation outside the JSON:
-[{"label":"archetype name","text":"rewritten copy","desc":"one-line reason"}]`;
+[{"label":"archetype name","text":"written copy","desc":"one-line reason"}]`;
 
                 const response = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+                    'https://api.groq.com/openai/v1/chat/completions',
                     {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'llama-3.3-70b-versatile',
+                            messages: [{ role: 'user', content: prompt }]
+                        })
                     }
                 );
 
                 const data    = await response.json();
-                const aiText  = data.candidates[0].content.parts[0].text;
+                const aiText  = data.choices[0].message.content;
                 const match   = aiText.match(/\[.*\]/s);
                 return match ? JSON.parse(match[0]) : getFallback(text);
 

@@ -46,12 +46,12 @@ function triggerRewrite() {
     const val = input.value.trim();
     const context = contextInput.value.trim();
 
-    if (!val) {
-        results.innerHTML = '<div style="font-size: 13px; color: #64748b; text-align: center; padding: 40px;">Enter copy to get True AI suggestions.</div>';
+    if (!val && !context) {
+        results.innerHTML = '<div style="font-size: 13px; color: #64748b; text-align: center; padding: 40px;">Enter copy to rewrite, or add an instruction to write from scratch.</div>';
         return;
     }
 
-    results.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="loading-spinner"></div><div style="font-size:11px; color:#818cf8; margin-top:8px;">Gemini AI is thinking...</div></div>';
+    results.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="loading-spinner"></div><div style="font-size:11px; color:#818cf8; margin-top:8px;">AI is writing...</div></div>';
 
     debounceTimer = setTimeout(async () => {
         const suggestions = await getAISuggestions(val, context);
@@ -64,12 +64,7 @@ input.addEventListener('input', triggerRewrite);
 contextInput.addEventListener('input', triggerRewrite);
 
 async function getAISuggestions(text, context = "") {
-    const res = await chrome.storage.local.get(['gemini_api_key']);
-    const apiKey = res.gemini_api_key;
-
-    if (!apiKey) {
-        return getHeuristicSuggestions(text, context, "(Offline Mode)");
-    }
+    const apiKey = typeof GROQ_KEY !== 'undefined' ? GROQ_KEY : '';
 
     try {
         const deepContext = typeof DEEP_DOCS_CONTEXT !== 'undefined' ? DEEP_DOCS_CONTEXT : { product_entities: [], featured_terms: [], us_standard: {}, style_guide: { core_principles: [], examples: [] } };
@@ -97,22 +92,29 @@ SaaS UX WRITING STANDARDS (strictly follow all):
 8. No marketing fluff — no "powerful", "seamless", "robust", "leverage"
 9. Use correct Capillary terminology
 
-INPUT:
-- Text to rewrite: "${text}"
-- Context: "${context || 'No specific context'}"
+TASK:
+${text
+    ? `- Rewrite this text: "${text}"\n- Context: "${context || 'No specific context'}"`
+    : `- Write new UI copy from scratch\n- Brief: "${context}"`
+}
 
 Return ONLY a valid JSON array of exactly 3 suggestions, no markdown:
 [{"label": "archetype", "text": "copy", "desc": "one-line reason"}]`;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                model: 'llama-3.3-70b-versatile',
+                messages: [{ role: 'user', content: prompt }]
             })
         });
 
         const data = await response.json();
-        const aiText = data.candidates[0].content.parts[0].text;
+        const aiText = data.choices[0].message.content;
         const jsonMatch = aiText.match(/\[.*\]/s);
         return jsonMatch ? JSON.parse(jsonMatch[0]) : getHeuristicSuggestions(text, context, "(AI Failed)");
     } catch (err) {

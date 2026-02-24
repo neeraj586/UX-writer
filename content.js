@@ -99,10 +99,7 @@ async function updatePanelContent(text) {
 
 async function getAISuggestions(text, context = "") {
     if (!text) return null;
-    const res = await chrome.storage.local.get(['gemini_api_key']);
-    const apiKey = res.gemini_api_key;
-
-    if (!apiKey) return getHeuristicSuggestions(text, context, "(Rule-based)");
+    const apiKey = typeof GROQ_KEY !== 'undefined' ? GROQ_KEY : '';
 
     try {
         const deepContext = typeof DEEP_DOCS_CONTEXT !== 'undefined' ? DEEP_DOCS_CONTEXT : { product_entities: [], featured_terms: [], us_standard: {}, style_guide: { core_principles: [], examples: [] } };
@@ -137,12 +134,19 @@ INPUT:
 Return ONLY a valid JSON array of exactly 3 suggestions, no markdown:
 [{"label": "archetype", "text": "copy", "desc": "one-line reason"}]`;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [{ role: 'user', content: prompt }]
+            })
         });
         const data = await response.json();
-        const aiText = data.candidates[0].content.parts[0].text;
+        const aiText = data.choices[0].message.content;
         const jsonMatch = aiText.match(/\[.*\]/s);
         return jsonMatch ? JSON.parse(jsonMatch[0]) : getHeuristicSuggestions(text, context, "(AI Parse Error)");
     } catch (e) {
