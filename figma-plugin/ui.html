@@ -505,7 +505,10 @@ Return ONLY a valid JSON array of exactly 3 suggestions, no markdown, no explana
                 const data    = await response.json();
                 const aiText  = data.choices[0].message.content;
                 const match   = aiText.match(/\[.*\]/s);
-                return match ? JSON.parse(match[0]) : getFallback(text);
+                if (!match) return getFallback(text);
+                const parsed = JSON.parse(match[0]);
+                // Always capitalise first letter — guaranteed regardless of AI output
+                return parsed.map(s => ({ ...s, text: s.text.charAt(0).toUpperCase() + s.text.slice(1) }));
 
             } catch (e) {
                 return getFallback(text);

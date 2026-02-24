@@ -120,7 +120,9 @@ Return ONLY a valid JSON array of exactly 3 suggestions, no markdown:
         const data = await response.json();
         const aiText = data.choices[0].message.content;
         const jsonMatch = aiText.match(/\[.*\]/s);
-        return jsonMatch ? JSON.parse(jsonMatch[0]) : getHeuristicSuggestions(text, context, "(AI Failed)");
+        if (!jsonMatch) return getHeuristicSuggestions(text, context, "(AI Failed)");
+        const parsed = JSON.parse(jsonMatch[0]);
+        return parsed.map(s => ({ ...s, text: s.text.charAt(0).toUpperCase() + s.text.slice(1) }));
     } catch (err) {
         console.error("AI Error:", err);
         return getHeuristicSuggestions(text, context, "(Offline Fallback)");
